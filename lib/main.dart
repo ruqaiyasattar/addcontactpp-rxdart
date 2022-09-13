@@ -20,7 +20,7 @@ void main() {
 
 void testIt() async {
   final stream1 = Stream.periodic(
-    const Duration(seconds: 3),
+    const Duration(seconds: 1),
         (count) => 'Stream 1, count = $count',
   );
 
@@ -28,7 +28,11 @@ void testIt() async {
     const Duration(seconds: 1),
         (count) => 'Stream 2, count = $count',
   );
-  final result = stream1.mergeWith([stream2]);
+  final result = Rx.zip2(
+      stream1,
+      stream2,
+          (one, two) => 'Zipped result, A = {$one}, B = {$two}',
+  );
   await for(final value in result){
     value.log();
   }
