@@ -14,4 +14,5 @@ This project is a starting point for a Flutter application.
 (c) mergeWith : =>It is great for immediate response to UI events like ListView of check boxes
 (d) zip : it waits for elements at a given index to pair
 - Simple App with button: On Every press, it recreated the stream (Behaviors Subject, Periodic Stream, Stream Builder)
+- Simple App with FilterChip : by using Stream, StreamBuilder and Bloc.
 - 
