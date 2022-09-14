@@ -15,4 +15,4 @@ This project is a starting point for a Flutter application.
 (d) zip : it waits for elements at a given index to pair
 - Simple App with button: On Every press, it recreated the stream (Behaviors Subject, Periodic Stream, Stream Builder)
 - Simple App with FilterChip : by using Stream, StreamBuilder and Bloc.
-- 
+- Simple App with 2 text fields : combineLatest with rxDart
