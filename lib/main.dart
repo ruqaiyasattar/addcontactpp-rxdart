@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
 void main() {
@@ -13,150 +16,46 @@ void main() {
   );
 }
 
-@immutable
-class Bloc{
-  final Sink<String?> setFirstName; //write only
-  final Sink<String?> setLastName;  //write only
-  final Stream<String> fullName;
-
-  Bloc._({
-    required this.setFirstName,
-    required this.setLastName,
-    required this.fullName,
-  }); //read only
-
-  void dispose(){
-    setFirstName.close();
-    setLastName.close();
-  }
-
-  factory Bloc(){
-    final firstNameSubject = BehaviorSubject<String?>();
-    final lastNameSubject = BehaviorSubject<String?>();
-    final Stream<String> fullName = Rx.combineLatest2(
-        firstNameSubject.startWith(null),
-        lastNameSubject.startWith(null),
-            (String? firstName, String? lastName) {
-          if (firstName != null &&
-              firstName.isNotEmpty &&
-              lastName != null &&
-              lastName.isNotEmpty)  {
-            return '$firstName $lastName';
-          }  else {
-            return 'Both first and last name must be provided';
-          }
-        });
-
-    return Bloc._(
-      setFirstName: firstNameSubject.sink,
-      setLastName: lastNameSubject.sink,
-      fullName: fullName,
-    );
-  }
+Stream<String> getName({
+  required String filePath,
+}){
+  final names = rootBundle.loadString(filePath);
+  return Stream.fromFuture(names).transform(const LineSplitter());
 }
+Stream<String> getAllNames() => getName(filePath: 'assets/texts/cat.txt')
+    .concatWith([getName(filePath: 'assets/texts/dog.txt')]);
 
-typedef AsyncSnapshotBuilderCallBack<T> = Widget Function(
-    BuildContext context,
-    T? value,
-    );
-
-class AsyncSnapshotBuilder<T> extends StatelessWidget{
-  final Stream<T> stream;
-  final AsyncSnapshotBuilderCallBack<T>? onNone;
-  final AsyncSnapshotBuilderCallBack<T>? onWaiting;
-  final AsyncSnapshotBuilderCallBack<T>? onActive;
-  final AsyncSnapshotBuilderCallBack<T>? onDone;
-
-  const AsyncSnapshotBuilder({
-    Key? key,
-    required this.stream,
-    this.onNone,
-    this.onWaiting,
-    this.onActive,
-    this.onDone,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<T>(
-      stream: stream,
-      builder: (context, snapshot){
-        switch(snapshot.connectionState){
-          case ConnectionState.none:
-            final callback = onNone ?? (_, __) => const SizedBox();
-            return callback(context, snapshot.data,);
-          case ConnectionState.waiting:
-            final callback = onWaiting ?? (_, __) => const CircularProgressIndicator();
-            return callback(context, snapshot.data,);
-          case ConnectionState.active:
-            final callback = onActive ?? (_, __) => const SizedBox();
-            return callback(context, snapshot.data, );
-          case ConnectionState.done:
-            final callback = onDone ?? (_, __) => const SizedBox();
-            return callback(context, snapshot.data, );
-        }
-      },
-    );
-  }
-
-}
-
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  //
-  late final Bloc bloc;
-
-  @override
-  void initState() {
-    super.initState();
-    bloc = Bloc();
-  }
-
-  @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
-  }
-
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("CombineLatest with RxDart"),
+        title: const Text("Concatenation with rxDart"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter first name here....',
-              ),
-              onChanged: bloc.setFirstName.add,
-            ),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter last name here....',
-              ),
-              onChanged: bloc.setLastName.add,
-            ),
-            AsyncSnapshotBuilder<String>(
-              stream: bloc.fullName,
-              onActive: (context, String? value){
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(value ?? ''),
-                );
-              },
-            ),
-          ],
-        ),
+      body: FutureBuilder<List<String>>(
+        future: getAllNames().toList(),
+        builder: (context, snapshot){
+          switch(snapshot.connectionState){
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return const Center(child: CircularProgressIndicator());
+            case ConnectionState.done:
+              final names = snapshot.requireData;
+              return ListView.separated(
+                itemCount: names.length,
+                separatorBuilder: (_,__) => const Divider(color: Colors.black,),
+                itemBuilder: (context, index){
+                  return ListTile(
+                    title: Text(names[index]),
+                  );
+                },
+              );
+          }
+        },
       ),
     );
   }
