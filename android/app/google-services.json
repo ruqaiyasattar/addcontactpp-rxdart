@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "705857393774",
+    "project_id": "rxdart-contacts-app",
+    "storage_bucket": "rxdart-contacts-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705857393774:android:9d2cf5ca02230e76bc427f",
+        "android_client_info": {
+          "package_name": "com.example.rxdart_demoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705857393774-7op3d8v7a3706352jhcto4523iep4t98.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_8rkI_wuwKfuqL7rXoP0XLl8pZotzYKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705857393774-7op3d8v7a3706352jhcto4523iep4t98.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,3 +17,4 @@ This project is a starting point for a Flutter application.
 - Simple App with FilterChip : by using Stream, StreamBuilder and Bloc.
 - Simple App with 2 text fields : combineLatest with rxDart
 - Simple App that reads two text files and concatenates their contents
+- Full-Fledged Firebase App - Contact App
